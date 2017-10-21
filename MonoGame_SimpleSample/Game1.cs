@@ -7,6 +7,13 @@ namespace MonoGame_SimpleSample
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+	enum GameState 
+	{
+		playing,
+		paused
+	}
+	
+	
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
@@ -14,6 +21,10 @@ namespace MonoGame_SimpleSample
 
         Texture2D playerTexture;
         AnimatedSprite playerSprite;
+		GameState currentGameState = GameState.playing;
+		
+		SpriteFont spriteFont;
+        bool isPauseKeyHeld = false;
 
         public Game1()
         {
@@ -45,6 +56,7 @@ namespace MonoGame_SimpleSample
             playerTexture = Content.Load<Texture2D>("professor_walk_cycle_no_hat");
 
             playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero);
+			spriteFont = Content.Load<SpriteFont>("font");
 
             // TODO: use this.Content to load your game content here
         }
@@ -68,9 +80,39 @@ namespace MonoGame_SimpleSample
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            var keyboardState = Keyboard.GetState();
 
-            playerSprite.Update(gameTime);
+
+            if( keyboardState.IsKeyDown(Keys.P) && !isPauseKeyHeld)
+            {
+
+                if (currentGameState == GameState.playing)
+                        currentGameState = GameState.paused;
+                else currentGameState = GameState.playing;
+            }
+
+            isPauseKeyHeld = keyboardState.IsKeyUp(Keys.P) ? false : true;
+
+
+
+            // TODO: Add your update logic here
+            switch (currentGameState)
+			{
+				case GameState.playing:
+				{
+					playerSprite.Update(gameTime);
+				}
+				break;
+				
+				case GameState.paused:
+				{
+					
+				}
+				
+				break;
+				
+			}
+
 
             base.Update(gameTime);
         }
@@ -86,8 +128,21 @@ namespace MonoGame_SimpleSample
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
+			
+			switch (currentGameState)
+			{
+				case GameState.playing:
+				{
+					playerSprite.Draw(spriteBatch);
+				}
+				break;
+				case GameState.paused:
+				{
+					spriteBatch.DrawString(spriteFont, "Game Paused",  Vector2.Zero, Color.White);
+				}
+				break;
+			}
 
-            playerSprite.Draw(spriteBatch);
 
             spriteBatch.End();
 
