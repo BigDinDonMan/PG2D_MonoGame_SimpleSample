@@ -19,45 +19,33 @@ namespace MonoGame_SimpleSample
         idle = 4 // not supported in the current sprite
     }
 
-    class AnimatedSprite
+    class AnimatedSprite : Sprite
     {
-        Texture2D texture;
-        Vector2 position;
-
-        BoundingBox boundingBox;
-        public BoundingBox BoundingBox
-        {
-            get
-            {
-                return this.boundingBox;
-            }
-
-        }
 
         int numberOfAnimationRows = 4;
         int animationFramesInRow = 9;
-        int frameWidth;
-        int frameHeight;
+
         int whichFrame;
         double currentFrameTime = 0;
         double expectedFrameTime = 200.0f;
         WalkingDirection currentWalkingDirection = WalkingDirection.down;
 
 
-        public AnimatedSprite(Texture2D texture, Vector2 startingPosition)
+        public AnimatedSprite(Texture2D texture, Vector2 startingPosition, int numberOfAnimationRows, int animationFramesInRow) : base(texture, startingPosition)
         {
-            this.position = startingPosition;
-            this.texture = texture;
 
-            frameHeight = texture.Height / numberOfAnimationRows;
-            frameWidth = texture.Width / animationFramesInRow;
+            base.frameHeight = texture.Height / numberOfAnimationRows;
+            base.frameWidth = texture.Width / animationFramesInRow;
+
+            this.numberOfAnimationRows = numberOfAnimationRows;
+            this.animationFramesInRow = animationFramesInRow;
 
             boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
 
         }
 
 
-        public void Update(GameTime gameTime)
+        new public void Update(GameTime gameTime)
         {
             currentFrameTime += gameTime.ElapsedGameTime.TotalMilliseconds;
             if (currentFrameTime >= expectedFrameTime)
@@ -67,15 +55,14 @@ namespace MonoGame_SimpleSample
             }
 
             updateMovement(gameTime);
-            updateBoundingBox();
+            base.updateBoundingBox();
 
         }
 
-        void updateBoundingBox()
-        {
-            boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
-
-        }
+        //void updateBoundingBox()
+        //{
+        //    boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
+        //}
 
         //This should be a part of input manager
         void updateMovement(GameTime gameTime)
@@ -141,17 +128,12 @@ namespace MonoGame_SimpleSample
 
 
 
-        public void Draw(SpriteBatch spriteBatch)
+        new public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, new Rectangle(whichFrame*frameWidth, frameHeight * (int)currentWalkingDirection, frameWidth, frameHeight), Color.White);
+            spriteBatch.Draw(texture, position, new Rectangle(whichFrame*base.frameWidth, base.frameHeight * (int)currentWalkingDirection, base.frameWidth, base.frameHeight), Color.White);
 
         }
 
-
-        public bool IsCollidingWith(AnimatedSprite otherSprite)
-        {
-            return this.boundingBox.Intersects(otherSprite.BoundingBox) ? true : false;
-        }
 
     }
 }

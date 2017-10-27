@@ -14,6 +14,11 @@ namespace MonoGame_SimpleSample
 
         Texture2D playerTexture;
         AnimatedSprite playerSprite;
+        Sprite testSprite;
+        //TestSprite playerSprite;
+        string collisionText = "";
+        SpriteFont HUDFont;
+
 
         public Game1()
         {
@@ -44,7 +49,10 @@ namespace MonoGame_SimpleSample
             spriteBatch = new SpriteBatch(GraphicsDevice);
             playerTexture = Content.Load<Texture2D>("professor_walk_cycle_no_hat");
 
-            playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero);
+            playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero, 4, 9);
+            testSprite = new Sprite(playerTexture, new Vector2(300, 200));
+            HUDFont = Content.Load<SpriteFont>("HUDFont");
+            //playerSprite = new TestSprite(playerTexture, Vector2.Zero);
 
             // TODO: use this.Content to load your game content here
         }
@@ -70,7 +78,13 @@ namespace MonoGame_SimpleSample
 
             // TODO: Add your update logic here
 
+            testSprite.Update(gameTime);
             playerSprite.Update(gameTime);
+
+            //check collisions
+
+            collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
+
 
             base.Update(gameTime);
         }
@@ -87,7 +101,10 @@ namespace MonoGame_SimpleSample
 
             spriteBatch.Begin();
 
+            testSprite.Draw(spriteBatch);
             playerSprite.Draw(spriteBatch);
+
+            spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
 
             spriteBatch.End();
 
