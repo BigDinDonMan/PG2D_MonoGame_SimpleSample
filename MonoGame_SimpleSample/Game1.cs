@@ -99,6 +99,8 @@ namespace MonoGame_SimpleSample
                 else currentGameState = GameState.playing;
             }
 
+
+            //This should be in the Input Manager - differentiate between pressed and held
             isPauseKeyHeld = keyboardState.IsKeyUp(Keys.P) ? false : true;
 
 
@@ -109,7 +111,13 @@ namespace MonoGame_SimpleSample
 				case GameState.playing:
 				{
 					playerSprite.Update(gameTime);
-				}
+                    testSprite.Update(gameTime);
+                    collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
+
+                    //check collisions
+
+                    collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
+                }
 				break;
 				
 				case GameState.paused:
@@ -120,14 +128,6 @@ namespace MonoGame_SimpleSample
 				break;
 				
 			}
-
-            testSprite.Update(gameTime);
-            playerSprite.Update(gameTime);
-
-            //check collisions
-
-            collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
-
 
             base.Update(gameTime);
         }
@@ -144,25 +144,24 @@ namespace MonoGame_SimpleSample
 
             spriteBatch.Begin();
 
-            testSprite.Draw(spriteBatch);
-            playerSprite.Draw(spriteBatch);
+
 			
 			switch (currentGameState)
 			{
 				case GameState.playing:
 				{
 					playerSprite.Draw(spriteBatch);
-				}
+                    testSprite.Draw(spriteBatch);
+                    spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
+                    }
 				break;
 				case GameState.paused:
 				{
-					spriteBatch.DrawString(spriteFont, "Game Paused",  Vector2.Zero, Color.White);
-				}
-				break;
+                    spriteBatch.DrawString(HUDFont, "Game Paused", Vector2.Zero, Color.White);
+
+                }
+                break;
 			}
-
-
-            spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
 
             spriteBatch.End();
 
