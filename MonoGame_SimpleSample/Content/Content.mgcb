@@ -44,3 +44,10 @@
 /processorParam:TextureFormat=Compressed
 /build:HUDFont.spritefont
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+

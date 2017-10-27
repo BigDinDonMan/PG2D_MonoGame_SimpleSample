@@ -7,6 +7,13 @@ namespace MonoGame_SimpleSample
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+	enum GameState 
+	{
+		playing,
+		paused
+	}
+	
+	
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
@@ -14,6 +21,11 @@ namespace MonoGame_SimpleSample
 
         Texture2D playerTexture;
         AnimatedSprite playerSprite;
+		GameState currentGameState = GameState.playing;
+		
+		SpriteFont spriteFont;
+        bool isPauseKeyHeld = false;
+
         Sprite testSprite;
         //TestSprite playerSprite;
         string collisionText = "";
@@ -76,7 +88,38 @@ namespace MonoGame_SimpleSample
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            var keyboardState = Keyboard.GetState();
+
+
+            if( keyboardState.IsKeyDown(Keys.P) && !isPauseKeyHeld)
+            {
+
+                if (currentGameState == GameState.playing)
+                        currentGameState = GameState.paused;
+                else currentGameState = GameState.playing;
+            }
+
+            isPauseKeyHeld = keyboardState.IsKeyUp(Keys.P) ? false : true;
+
+
+
             // TODO: Add your update logic here
+            switch (currentGameState)
+			{
+				case GameState.playing:
+				{
+					playerSprite.Update(gameTime);
+				}
+				break;
+				
+				case GameState.paused:
+				{
+					
+				}
+				
+				break;
+				
+			}
 
             testSprite.Update(gameTime);
             playerSprite.Update(gameTime);
@@ -103,6 +146,21 @@ namespace MonoGame_SimpleSample
 
             testSprite.Draw(spriteBatch);
             playerSprite.Draw(spriteBatch);
+			
+			switch (currentGameState)
+			{
+				case GameState.playing:
+				{
+					playerSprite.Draw(spriteBatch);
+				}
+				break;
+				case GameState.paused:
+				{
+					spriteBatch.DrawString(spriteFont, "Game Paused",  Vector2.Zero, Color.White);
+				}
+				break;
+			}
+
 
             spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
 
