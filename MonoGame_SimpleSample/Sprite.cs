@@ -22,7 +22,7 @@ namespace MonoGame_SimpleSample
             }
             set
             {
-                Position = this.position;
+                this.position = value;
             }
         }
 

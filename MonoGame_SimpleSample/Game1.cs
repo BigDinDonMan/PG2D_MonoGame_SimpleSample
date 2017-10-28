@@ -21,13 +21,13 @@ namespace MonoGame_SimpleSample
 
         Texture2D playerTexture;
         AnimatedSprite playerSprite;
+
+        Texture2D groundTexture;
+        Sprite groundSprite;
 		GameState currentGameState = GameState.playing;
 		
-		SpriteFont spriteFont;
         bool isPauseKeyHeld = false;
 
-        Sprite testSprite;
-        //TestSprite playerSprite;
         string collisionText = "";
         SpriteFont HUDFont;
 
@@ -62,9 +62,10 @@ namespace MonoGame_SimpleSample
             playerTexture = Content.Load<Texture2D>("professor_walk_cycle_no_hat");
 
             playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero, 4, 9);
-            testSprite = new Sprite(playerTexture, new Vector2(300, 200));
             HUDFont = Content.Load<SpriteFont>("HUDFont");
-            //playerSprite = new TestSprite(playerTexture, Vector2.Zero);
+
+            groundTexture = Content.Load<Texture2D>("ground");
+            groundSprite = new Sprite(groundTexture, new Vector2(0, graphics.GraphicsDevice.Viewport.Height - groundTexture.Height));
 
             // TODO: use this.Content to load your game content here
         }
@@ -110,13 +111,14 @@ namespace MonoGame_SimpleSample
 			{
 				case GameState.playing:
 				{
-					playerSprite.Update(gameTime);
-                    testSprite.Update(gameTime);
-                    collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
+                    //Update ground:
+                    groundSprite.Update(gameTime);
 
+
+                    playerSprite.Update(gameTime);
                     //check collisions
 
-                    collisionText = playerSprite.IsCollidingWith(testSprite) ? "there is a collision" : " there is no collision";
+                    collisionText = playerSprite.IsCollidingWith(groundSprite) ? "there is a collision" : " there is no collision";
                 }
 				break;
 				
@@ -150,10 +152,12 @@ namespace MonoGame_SimpleSample
 			{
 				case GameState.playing:
 				{
-					playerSprite.Draw(spriteBatch);
-                    testSprite.Draw(spriteBatch);
-                    spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
-                    }
+                        //draw the ground
+                        groundSprite.Draw(spriteBatch);
+
+                        playerSprite.Draw(spriteBatch);
+                        spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
+                }
 				break;
 				case GameState.paused:
 				{
