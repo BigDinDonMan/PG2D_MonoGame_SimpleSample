@@ -30,6 +30,15 @@ namespace MonoGame_SimpleSample
         double expectedFrameTime = 200.0f;
         WalkingDirection currentWalkingDirection = WalkingDirection.down;
 
+        //jumping
+        public bool isFalling = true;
+        //bool isJumping = false;
+
+        float dy = 0.0f;
+        float dx = 0.0f;
+        float gravity = 0.05f;
+        Vector2 momentum = Vector2.Zero;
+
 
         public AnimatedSprite(Texture2D texture, Vector2 startingPosition, int numberOfAnimationRows, int animationFramesInRow) : base(texture, startingPosition)
         {
@@ -47,6 +56,7 @@ namespace MonoGame_SimpleSample
 
         new public void Update(GameTime gameTime)
         {
+
             currentFrameTime += gameTime.ElapsedGameTime.TotalMilliseconds;
             if (currentFrameTime >= expectedFrameTime)
             {
@@ -55,7 +65,9 @@ namespace MonoGame_SimpleSample
             }
 
             updateMovement(gameTime);
-            base.updateBoundingBox();
+            Gravity();
+            isFalling = true;
+            base.updateBoundingBoxes();
 
         }
 
@@ -104,13 +116,18 @@ namespace MonoGame_SimpleSample
                         case Keys.W:
                             {
                                 currentWalkingDirection = WalkingDirection.up;
-                                movementVector += new Vector2(0, -movementSpeed);
+                                //movementVector += new Vector2(0, -movementSpeed);
                                 break;
                             }
                         case Keys.S:
                             {
                                 currentWalkingDirection = WalkingDirection.down;
-                                movementVector += new Vector2(0, movementSpeed);
+                                //movementVector += new Vector2(0, movementSpeed);
+                                break;
+                            }
+                        case Keys.Space:
+                            {
+                                Jump();
                                 break;
                             }
                         default:
@@ -123,14 +140,57 @@ namespace MonoGame_SimpleSample
                
 
             position += movementVector;
+
+        }
+
+        public void Jump()
+        {
+            if(isFalling == false)
+            {
+                momentum = new Vector2(0, -3f);
+                isFalling = true;
+            }
+
+        }
+
+        public void Gravity()
+        {
+            if(isFalling)
+            {
+                momentum.Y += gravity;
+            }
+
+            else
+            {
+                momentum.Y = 0;
+            }
+
+            position += momentum;
+
         }
 
 
-
-
-        new public void Draw(SpriteBatch spriteBatch)
+        new public void Draw(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, new Rectangle(whichFrame*base.frameWidth, base.frameHeight * (int)currentWalkingDirection, base.frameWidth, base.frameHeight), Color.White);
+            Debug_DrawBounds(graphicsDevice, spriteBatch);
+        }
+
+
+        new public bool IsCollidingWith(Sprite otherSprite)
+        {
+            //collision top - bottom -> stop the gravity momentum
+            if (this.bottomBoundingBox.Intersects(otherSprite.TopBoundingBox))
+            {
+                isFalling = false;
+            }
+            //collsion left/right -> stop the left/right momentum
+            if (this.leftBoundingBox.Intersects(otherSprite.RightBoundingBox) || this.rightBoundingBox.Intersects(otherSprite.RightBoundingBox) )
+            {
+                //TODO: FInish this code
+            }
+
+            return this.boundingBox.Intersects(otherSprite.BoundingBox) ? true : false;
 
         }
 

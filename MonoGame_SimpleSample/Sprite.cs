@@ -26,13 +26,50 @@ namespace MonoGame_SimpleSample
             }
         }
 
-
         protected BoundingBox boundingBox;
         public BoundingBox BoundingBox
         {
             get
             {
                 return this.boundingBox;
+            }
+
+        }
+
+        protected BoundingBox bottomBoundingBox;
+        public BoundingBox BottomBoundingBox
+        {
+            get
+            {
+                return this.bottomBoundingBox;
+            }
+
+        }
+        protected BoundingBox topBoundingBox;
+        public BoundingBox TopBoundingBox
+        {
+            get
+            {
+                return this.topBoundingBox;
+            }
+
+        }
+
+        protected BoundingBox leftBoundingBox;
+        public BoundingBox LeftBoundingBox
+        {
+            get
+            {
+                return this.leftBoundingBox;
+            }
+
+        }
+        protected BoundingBox rightBoundingBox;
+        public BoundingBox RightBoundingBox
+        {
+            get
+            {
+                return this.rightBoundingBox;
             }
 
         }
@@ -46,32 +83,62 @@ namespace MonoGame_SimpleSample
             this.texture = texture;
             frameHeight = texture.Height;
             frameWidth = texture.Width;
-            boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
+            updateBoundingBoxes();
 
         }
 
 
         public void Update(GameTime gameTime)
         {
-            updateBoundingBox();
+            updateBoundingBoxes();
         }
 
-        protected void updateBoundingBox()
+        protected void updateBoundingBoxes()
         {
             boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
+            bottomBoundingBox = new BoundingBox(new Vector3(position.X + 2, position.Y + frameHeight - 2, 0), new Vector3(position.X + frameWidth - 2, position.Y + frameHeight, 0));
+            topBoundingBox = new BoundingBox(new Vector3(position.X + 2, position.Y, 0), new Vector3(position.X + frameWidth - 2, position.Y + 2, 0));
+            leftBoundingBox = new BoundingBox(new Vector3(position.X, position.Y + 2, 0), new Vector3(position.X + 2, position.Y + frameHeight - 2, 0));
+            rightBoundingBox = new BoundingBox(new Vector3(position.X + frameWidth - 2, position.Y + 2, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight - 2, 0));
 
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+
+        public void Draw(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, Color.White);
+            Debug_DrawBounds(graphicsDevice, spriteBatch);
 
         }
+
 
         public bool IsCollidingWith(Sprite otherSprite)
         {
             return this.boundingBox.Intersects(otherSprite.BoundingBox) ? true : false;
         }
+
+
+        public void Debug_DrawBounds(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
+        {
+            DrawRectangle(graphicsDevice, spriteBatch, BottomBoundingBox, Color.Red);
+            DrawRectangle(graphicsDevice, spriteBatch, TopBoundingBox, Color.Green);
+            DrawRectangle(graphicsDevice, spriteBatch, LeftBoundingBox, Color.Blue);
+            DrawRectangle(graphicsDevice, spriteBatch, RightBoundingBox, Color.Violet);
+        }
+
+        private void DrawRectangle(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, BoundingBox boundingBox, Color color)
+        {
+
+            Texture2D rect = new Texture2D(graphicsDevice, 1, 1);
+            rect.SetData(new[] { Color.White });
+            int rectWidth = (int)(boundingBox.Max.X - boundingBox.Min.X);
+            int rectHeight = (int)(boundingBox.Max.Y - boundingBox.Min.Y);
+
+            Rectangle coords = new Rectangle((int)boundingBox.Min.X, (int)boundingBox.Min.Y, rectWidth, rectHeight);
+
+            spriteBatch.Draw(rect, coords, color);
+        }
+
 
     }
 }
