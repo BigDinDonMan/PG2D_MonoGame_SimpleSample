@@ -19,6 +19,8 @@ namespace MonoGame_SimpleSample
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteBatch backgroudSpriteBatch;
+
 
         Texture2D playerTexture;
         AnimatedSprite playerSprite;
@@ -28,7 +30,7 @@ namespace MonoGame_SimpleSample
 		GameState currentGameState = GameState.playing;
 
         Texture2D backgroundTexture;
-        ScrollingBackground scrollingBackground;
+        //ScrollingBackground scrollingBackground;
 
         bool isPauseKeyHeld = false;
 
@@ -36,7 +38,6 @@ namespace MonoGame_SimpleSample
         SpriteFont HUDFont;
 
         List<Sprite> Level;
-
 
         public Game1()
         {
@@ -69,6 +70,7 @@ namespace MonoGame_SimpleSample
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            backgroudSpriteBatch = new SpriteBatch(GraphicsDevice);
             playerTexture = Content.Load<Texture2D>("professor_walk_cycle_no_hat");
 
             var lines = System.IO.File.ReadAllLines(@"Content/Level1.txt");
@@ -84,8 +86,8 @@ namespace MonoGame_SimpleSample
             groundTexture = Content.Load<Texture2D>("ground");
             groundSprite = new Sprite(groundTexture, new Vector2(0, graphics.GraphicsDevice.Viewport.Height - groundTexture.Height));
 
-            backgroundTexture = Content.Load<Texture2D>("bg_layer_1_small");
-            scrollingBackground = new ScrollingBackground(backgroundTexture, new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            backgroundTexture = Content.Load<Texture2D>("wall_background");
+            //scrollingBackground = new ScrollingBackground(backgroundTexture, new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
             playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero , 4, 9);
             playerSprite.Position = new Vector2(0, graphics.PreferredBackBufferHeight - (groundTexture.Height + (playerSprite.BoundingBox.Max.Y - playerSprite.BoundingBox.Min.Y) + 30));
@@ -138,7 +140,7 @@ namespace MonoGame_SimpleSample
 				{
                     //Update ground:
                     groundSprite.Update(gameTime);
-                    scrollingBackground.Update(gameTime);
+                    //scrollingBackground.Update(gameTime);
 
                     //Update Level
                     foreach(var sprite in Level)
@@ -148,9 +150,6 @@ namespace MonoGame_SimpleSample
 
                     playerSprite.Update(gameTime);
                     //check collisions
-
-
-                    //playerSprite.isFalling = true;
 
                     collisionText = playerSprite.IsCollidingWith(groundSprite) ? "there is a collision" : " there is no collision";
 
@@ -192,7 +191,7 @@ namespace MonoGame_SimpleSample
 			{
 				case GameState.playing:
 				{
-                        scrollingBackground.Draw(spriteBatch);
+                        spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
                         //draw the ground
                         groundSprite.Draw(GraphicsDevice, spriteBatch);
