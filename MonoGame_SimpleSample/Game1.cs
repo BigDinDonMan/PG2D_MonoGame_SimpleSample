@@ -44,6 +44,7 @@ namespace MonoGame_SimpleSample
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = 500;
             graphics.PreferredBackBufferWidth = 1000;
+            
 
             Content.RootDirectory = "Content";
         }
@@ -80,16 +81,16 @@ namespace MonoGame_SimpleSample
 
                 Texture2D tempTexture = Content.Load<Texture2D>(data[0]);
                 Vector2 tempPos = new Vector2(int.Parse(data[1]), int.Parse(data[2]));
-                Level.Add(new Sprite(tempTexture, tempPos));
+                Level.Add(new Sprite(tempTexture, tempPos, GraphicsDevice));
 
             }
             groundTexture = Content.Load<Texture2D>("ground");
-            groundSprite = new Sprite(groundTexture, new Vector2(0, graphics.GraphicsDevice.Viewport.Height - groundTexture.Height));
+            groundSprite = new Sprite(groundTexture, new Vector2(0, graphics.GraphicsDevice.Viewport.Height - groundTexture.Height), GraphicsDevice);
 
             backgroundTexture = Content.Load<Texture2D>("wall_background");
             //scrollingBackground = new ScrollingBackground(backgroundTexture, new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
-            playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero , 4, 9);
+            playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero , 4, 9, GraphicsDevice);
             playerSprite.Position = new Vector2(0, graphics.PreferredBackBufferHeight - (groundTexture.Height + (playerSprite.BoundingBox.Max.Y - playerSprite.BoundingBox.Min.Y) + 30));
             HUDFont = Content.Load<SpriteFont>("HUDFont");
 
@@ -180,7 +181,6 @@ namespace MonoGame_SimpleSample
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // TODO: Add your drawing code here
 
             spriteBatch.Begin();
@@ -194,6 +194,7 @@ namespace MonoGame_SimpleSample
                         spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
                         //draw the ground
+                        //groundSprite.Draw(GraphicsDevice, spriteBatch);
                         groundSprite.Draw(GraphicsDevice, spriteBatch);
 
                         foreach (var sprite in Level)
@@ -204,7 +205,7 @@ namespace MonoGame_SimpleSample
 
 
                         playerSprite.Draw(GraphicsDevice, spriteBatch);
-                        spriteBatch.DrawString(HUDFont, collisionText, new Vector2(300, 0), Color.Red);
+                        spriteBatch.DrawString(HUDFont, collisionText, new Vector2(700, 0), Color.Red);
                 }
 				break;
 				case GameState.paused:

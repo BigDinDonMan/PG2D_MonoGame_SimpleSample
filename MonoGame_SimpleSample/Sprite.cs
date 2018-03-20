@@ -12,6 +12,9 @@ namespace MonoGame_SimpleSample
     class Sprite
     {
 
+        //Debug textures - just for drawing bounding boxes
+        Texture2D rect;
+
         protected Texture2D texture;
         protected Vector2 position;
         public Vector2 Position
@@ -35,6 +38,16 @@ namespace MonoGame_SimpleSample
             }
 
         }
+
+        protected Rectangle boundingRectangle;
+        public Rectangle BoundingRectangle
+        {
+            get
+            {
+                return this.boundingRectangle;
+            }
+        }
+
 
         protected BoundingBox bottomBoundingBox;
         public BoundingBox BottomBoundingBox
@@ -77,30 +90,35 @@ namespace MonoGame_SimpleSample
         protected int frameWidth;
         protected int frameHeight;
 
-        public Sprite(Texture2D texture, Vector2 startingPosition)
+        public Sprite(Texture2D texture, Vector2 startingPosition, GraphicsDevice graphicsDevice)
         {
+            rect = new Texture2D(graphicsDevice, 1, 1);
             position = startingPosition;
             this.texture = texture;
             frameHeight = texture.Height;
             frameWidth = texture.Width;
             updateBoundingBoxes();
-
         }
 
 
         public void Update(GameTime gameTime)
         {
             updateBoundingBoxes();
+            updateRectengle();
+        }
+
+        private void updateRectengle()
+        {
+            boundingRectangle = new Rectangle((int)position.X, (int)position.Y, frameWidth, frameHeight);
         }
 
         protected void updateBoundingBoxes()
         {
             boundingBox = new BoundingBox(new Vector3(position.X, position.Y, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight, 0));
-            bottomBoundingBox = new BoundingBox(new Vector3(position.X + 2, position.Y + frameHeight - 2, 0), new Vector3(position.X + frameWidth - 2, position.Y + frameHeight, 0));
-            topBoundingBox = new BoundingBox(new Vector3(position.X + 2, position.Y, 0), new Vector3(position.X + frameWidth - 2, position.Y + 2, 0));
-            leftBoundingBox = new BoundingBox(new Vector3(position.X, position.Y + 2, 0), new Vector3(position.X + 2, position.Y + frameHeight - 2, 0));
-            rightBoundingBox = new BoundingBox(new Vector3(position.X + frameWidth - 2, position.Y + 2, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight - 2, 0));
-
+            bottomBoundingBox = new BoundingBox(new Vector3(position.X + 4, position.Y + frameHeight - 4, 0), new Vector3(position.X + frameWidth - 4, position.Y + frameHeight, 0));
+            topBoundingBox = new BoundingBox(new Vector3(position.X + 4, position.Y, 0), new Vector3(position.X + frameWidth - 4, position.Y + 4, 0));
+            leftBoundingBox = new BoundingBox(new Vector3(position.X, position.Y + 4, 0), new Vector3(position.X + 4, position.Y + frameHeight - 4, 0));
+            rightBoundingBox = new BoundingBox(new Vector3(position.X + frameWidth - 4, position.Y + 4, 0), new Vector3(position.X + frameWidth, position.Y + frameHeight - 4, 0));
         }
 
 
@@ -111,7 +129,7 @@ namespace MonoGame_SimpleSample
 
         }
 
-
+        #region Collisions - BoundingBox
         public bool IsCollidingWith(Sprite otherSprite)
         {
             return this.boundingBox.Intersects(otherSprite.BoundingBox) ? true : false;
@@ -129,7 +147,7 @@ namespace MonoGame_SimpleSample
         private void DrawRectangle(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch, BoundingBox boundingBox, Color color)
         {
 
-            Texture2D rect = new Texture2D(graphicsDevice, 1, 1);
+            //rect = new Texture2D(graphicsDevice, 1, 1); - TODO: fix memory leak caused by this line
             rect.SetData(new[] { Color.White });
             int rectWidth = (int)(boundingBox.Max.X - boundingBox.Min.X);
             int rectHeight = (int)(boundingBox.Max.Y - boundingBox.Min.Y);
@@ -139,6 +157,41 @@ namespace MonoGame_SimpleSample
             spriteBatch.Draw(rect, coords, color);
         }
 
+        #endregion
+        #region Collisions - Rectangles
 
+        public bool isCollidingLeft(Sprite otherSprite)
+        {
+            return this.boundingRectangle.Right + 5 > otherSprite.boundingRectangle.Left &&
+                   this.boundingRectangle.Left < otherSprite.boundingRectangle.Left &&
+                   this.boundingRectangle.Bottom > otherSprite.boundingRectangle.Top &&
+                   this.boundingRectangle.Top < otherSprite.boundingRectangle.Bottom;
+        }
+
+        public bool isCollidingRight(Sprite otherSprite)
+        {
+            return this.boundingRectangle.Left - 5 < otherSprite.boundingRectangle.Right &&
+                   this.boundingRectangle.Right > otherSprite.boundingRectangle.Right &&
+                   this.boundingRectangle.Bottom > otherSprite.boundingRectangle.Top &&
+                   this.boundingRectangle.Top < otherSprite.boundingRectangle.Bottom;
+        }
+
+        public bool isCollidingTop(Sprite otherSprite)
+        {
+            return this.boundingRectangle.Bottom  + 5 > otherSprite.boundingRectangle.Top &&
+                   this.boundingRectangle.Top < otherSprite.boundingRectangle.Top &&
+                   this.boundingRectangle.Right > otherSprite.boundingRectangle.Left &&
+                   this.boundingRectangle.Left < otherSprite.boundingRectangle.Right;
+        }
+
+        public bool isCollidingBottom(Sprite otherSprite)
+        {
+            return this.boundingRectangle.Top  - 5 < otherSprite.boundingRectangle.Bottom &&
+                   this.boundingRectangle.Bottom > otherSprite.boundingRectangle.Bottom &&
+                   this.boundingRectangle.Right > otherSprite.boundingRectangle.Left &&
+                   this.boundingRectangle.Left < otherSprite.boundingRectangle.Right;
+        }
+
+        #endregion
     }
 }
