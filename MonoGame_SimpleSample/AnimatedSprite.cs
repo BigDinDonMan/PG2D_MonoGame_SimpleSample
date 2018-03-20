@@ -32,15 +32,18 @@ namespace MonoGame_SimpleSample
 
         //jumping
         public bool isFalling = true;
+        private bool isTouchingLeft = false;
+        private bool isTouchingRight = false;
         //bool isJumping = false;
 
         float dy = 0.0f;
         float dx = 0.0f;
-        float gravity = 0.05f;
+        float gravity = 0.15f;
+        float jumpStrength = 6f;
         Vector2 momentum = Vector2.Zero;
 
 
-        public AnimatedSprite(Texture2D texture, Vector2 startingPosition, int numberOfAnimationRows, int animationFramesInRow) : base(texture, startingPosition)
+        public AnimatedSprite(Texture2D texture, Vector2 startingPosition, int numberOfAnimationRows, int animationFramesInRow, GraphicsDevice graphicsDevice) : base(texture, startingPosition, graphicsDevice)
         {
 
             base.frameHeight = texture.Height / numberOfAnimationRows;
@@ -65,7 +68,7 @@ namespace MonoGame_SimpleSample
             }
 
             updateMovement(gameTime);
-            Gravity();
+            ApplyGravity();
             isFalling = true;
             base.updateBoundingBoxes();
 
@@ -82,7 +85,7 @@ namespace MonoGame_SimpleSample
             var keyboardState = Keyboard.GetState();
             var pressedKeys = keyboardState.GetPressedKeys();
 
-            int pixelsPerSecond = 50;
+            int pixelsPerSecond = 100;
             float movementSpeed = (float)(pixelsPerSecond * (gameTime.ElapsedGameTime.TotalSeconds));
 
             Vector2 movementVector = Vector2.Zero;
@@ -103,14 +106,14 @@ namespace MonoGame_SimpleSample
                         case Keys.A:
                             {
                                 currentWalkingDirection = WalkingDirection.left;
-                                movementVector += new Vector2(-movementSpeed, 0);
+                                if(!isTouchingLeft) movementVector += new Vector2(-movementSpeed, 0);
                                 break;
                             }
 
                         case Keys.D:
                             {
                                 currentWalkingDirection = WalkingDirection.right;
-                                movementVector += new Vector2(movementSpeed, 0);
+                                if (!isTouchingRight) movementVector += new Vector2(movementSpeed, 0);
                                 break;
                             }
                         case Keys.W:
@@ -147,13 +150,13 @@ namespace MonoGame_SimpleSample
         {
             if(isFalling == false)
             {
-                momentum = new Vector2(0, -3f);
+                momentum = new Vector2(0, -jumpStrength);
                 isFalling = true;
             }
 
         }
 
-        public void Gravity()
+        public void ApplyGravity()
         {
             if(isFalling)
             {
@@ -185,10 +188,17 @@ namespace MonoGame_SimpleSample
                 isFalling = false;
             }
             //collsion left/right -> stop the left/right momentum
-            if (this.leftBoundingBox.Intersects(otherSprite.RightBoundingBox) || this.rightBoundingBox.Intersects(otherSprite.RightBoundingBox) )
+            if (this.leftBoundingBox.Intersects(otherSprite.RightBoundingBox))
             {
-                //TODO: FInish this code
+                isTouchingLeft = true;
             }
+            else isTouchingLeft = false;
+            if (this.rightBoundingBox.Intersects(otherSprite.LeftBoundingBox))
+            {
+                isTouchingRight = true;
+            }
+            else isTouchingRight = false;
+
 
             return this.boundingBox.Intersects(otherSprite.BoundingBox) ? true : false;
 
