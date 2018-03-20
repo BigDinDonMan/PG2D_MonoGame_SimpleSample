@@ -125,7 +125,7 @@ namespace MonoGame_SimpleSample
         public void Draw(GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, Color.White);
-            Debug_DrawBounds(graphicsDevice, spriteBatch);
+            //Debug_DrawBounds(graphicsDevice, spriteBatch);
 
         }
 

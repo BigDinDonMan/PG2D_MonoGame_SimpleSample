@@ -23,7 +23,7 @@ namespace MonoGame_SimpleSample
 
 
         Texture2D playerTexture;
-        AnimatedSprite playerSprite;
+        PlayerSprite playerSprite;
 
         Texture2D groundTexture;
         Sprite groundSprite;
@@ -37,7 +37,7 @@ namespace MonoGame_SimpleSample
         string collisionText = "";
         SpriteFont HUDFont;
 
-        List<Sprite> Level;
+        List<AnimatedSprite> Level;
 
         public Game1()
         {
@@ -58,7 +58,7 @@ namespace MonoGame_SimpleSample
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Level = new List<Sprite>();
+            Level = new List<AnimatedSprite>();
 
             base.Initialize();
         }
@@ -81,7 +81,10 @@ namespace MonoGame_SimpleSample
 
                 Texture2D tempTexture = Content.Load<Texture2D>(data[0]);
                 Vector2 tempPos = new Vector2(int.Parse(data[1]), int.Parse(data[2]));
-                Level.Add(new Sprite(tempTexture, tempPos, GraphicsDevice));
+                int animationRows = int.Parse(data[3]);
+                int animationFramesInRow = int.Parse(data[4]);
+
+                Level.Add(new AnimatedSprite(tempTexture, tempPos,animationRows, animationFramesInRow, GraphicsDevice));
 
             }
             groundTexture = Content.Load<Texture2D>("ground");
@@ -90,7 +93,7 @@ namespace MonoGame_SimpleSample
             backgroundTexture = Content.Load<Texture2D>("wall_background");
             //scrollingBackground = new ScrollingBackground(backgroundTexture, new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
 
-            playerSprite = new AnimatedSprite(playerTexture, Vector2.Zero , 4, 9, GraphicsDevice);
+            playerSprite = new PlayerSprite(playerTexture, Vector2.Zero , 4, 9, GraphicsDevice);
             playerSprite.Position = new Vector2(0, graphics.PreferredBackBufferHeight - (groundTexture.Height + (playerSprite.BoundingBox.Max.Y - playerSprite.BoundingBox.Min.Y) + 30));
             HUDFont = Content.Load<SpriteFont>("HUDFont");
 
@@ -150,15 +153,15 @@ namespace MonoGame_SimpleSample
                     }
 
                     playerSprite.Update(gameTime);
+                   
                     //check collisions
+                    playerSprite.IsCollidingWith(groundSprite);
+                    
 
-                    collisionText = playerSprite.IsCollidingWith(groundSprite) ? "there is a collision" : " there is no collision";
-
-
-                    foreach (var sprite in Level)
-                    {
-                        collisionText = playerSprite.IsCollidingWith(sprite) ? "there is a collision" : " there is no collision";
-                    }
+                    //foreach (var sprite in Level)
+                    //{
+                    //    collisionText = playerSprite.IsCollidingWith(sprite) ? "there is a collision" : " there is no collision";
+                    //}
                 }
 				break;
 				
