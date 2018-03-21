@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\DefaultShader.fx" />
     <Content Include="Content\Level1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

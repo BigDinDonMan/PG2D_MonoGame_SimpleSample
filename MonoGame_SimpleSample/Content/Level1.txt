@@ -2,3 +2,5 @@ animated_torch;200;300;1;9
 animated_torch;400;300;1;9
 animated_torch;600;300;1;9
 animated_torch;800;300;1;9
+portal;870;242;1;1
+door_frame; 870;242;1;1

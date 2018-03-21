@@ -32,10 +32,16 @@ namespace MonoGame_SimpleSample
         Texture2D backgroundTexture;
         //ScrollingBackground scrollingBackground;
 
+        Texture2D noise;
+        Texture2D perlinNoise;
+        Texture2D lightMap;
+
         bool isPauseKeyHeld = false;
 
         string collisionText = "";
         SpriteFont HUDFont;
+        Effect defaultShader;
+
 
         List<AnimatedSprite> Level;
 
@@ -96,6 +102,15 @@ namespace MonoGame_SimpleSample
             playerSprite = new PlayerSprite(playerTexture, Vector2.Zero , 4, 9, GraphicsDevice);
             playerSprite.Position = new Vector2(0, graphics.PreferredBackBufferHeight - (groundTexture.Height + (playerSprite.BoundingBox.Max.Y - playerSprite.BoundingBox.Min.Y) + 30));
             HUDFont = Content.Load<SpriteFont>("HUDFont");
+
+            //Effect Textures
+
+            noise = Content.Load<Texture2D>("noise");
+            perlinNoise = Content.Load<Texture2D>("perlin_noise");
+            lightMap = Content.Load<Texture2D>("light_map");
+
+            //Effects
+            defaultShader = Content.Load<Effect>("DefaultShader");
 
 
             // TODO: use this.Content to load your game content here
@@ -186,39 +201,29 @@ namespace MonoGame_SimpleSample
             GraphicsDevice.Clear(Color.CornflowerBlue);
             // TODO: Add your drawing code here
 
+            backgroudSpriteBatch.Begin(effect: defaultShader);
             spriteBatch.Begin();
 
 
-			
-			switch (currentGameState)
-			{
-				case GameState.playing:
-				{
-                        spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
-                        //draw the ground
-                        //groundSprite.Draw(GraphicsDevice, spriteBatch);
-                        groundSprite.Draw(GraphicsDevice, spriteBatch);
+            //spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+            backgroudSpriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
-                        foreach (var sprite in Level)
-                        {
-                            sprite.Draw(GraphicsDevice, spriteBatch);
-                        }
+            //draw the ground
+            //groundSprite.Draw(GraphicsDevice, spriteBatch);
+            groundSprite.Draw(GraphicsDevice, spriteBatch);
+
+            foreach (var sprite in Level)
+            {
+                sprite.Draw(GraphicsDevice, spriteBatch);
+            }
 
 
 
-                        playerSprite.Draw(GraphicsDevice, spriteBatch);
-                        spriteBatch.DrawString(HUDFont, collisionText, new Vector2(700, 0), Color.Red);
-                }
-				break;
-				case GameState.paused:
-				{
-                    spriteBatch.DrawString(HUDFont, "Game Paused", Vector2.Zero, Color.White);
+            playerSprite.Draw(GraphicsDevice, spriteBatch);
+            spriteBatch.DrawString(HUDFont, collisionText, new Vector2(700, 0), Color.Red);
 
-                }
-                break;
-			}
-
+            backgroudSpriteBatch.End();
             spriteBatch.End();
 
 
