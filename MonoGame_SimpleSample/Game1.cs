@@ -108,7 +108,7 @@ namespace MonoGame_SimpleSample
 
             noise = Content.Load<Texture2D>("noise");
             perlinNoise = Content.Load<Texture2D>("perlin_noise");
-            lightMap = Content.Load<Texture2D>("light_map");
+            lightMap = Content.Load<Texture2D>("light_map_inv");
 
             //Effects
             defaultShader = Content.Load<Effect>("DefaultShader");
@@ -179,29 +179,14 @@ namespace MonoGame_SimpleSample
                     //Lighting from torches on the wall
                     Vector2 screenMiddle = new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
 
-                        //lightingShader.Parameters["SpriteTexture"].SetValue(backgroundTexture);
+
+                        lightingShader.Parameters["lightPos_1"].SetValue(Level[0].Middle);
+                        lightingShader.Parameters["lightPos_2"].SetValue(Level[1].Middle);
+                        lightingShader.Parameters["lightPos_3"].SetValue(Level[2].Middle);
+                        lightingShader.Parameters["lightPos_4"].SetValue(Level[3].Middle);
+                        lightingShader.Parameters["lightMapSize"].SetValue(new Vector2(lightMap.Width, lightMap.Height));
+                        lightingShader.Parameters["textureSize"].SetValue(new Vector2(backgroundTexture.Width, backgroundTexture.Height));
                         lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
-
-                        lightingShader.Parameters["lightPos_1"].SetValue(Level[0].Position);
-                    //lightingShader.Parameters["lightPos_2"].SetValue(Level[0].Position);
-                    //lightingShader.Parameters["lightPos_3"].SetValue(Level[0].Position);
-                    //lightingShader.Parameters["lightPos_4"].SetValue(Level[0].Position);
-                    lightingShader.Parameters["lightMapSize"].SetValue(new Vector2(lightMap.Width, lightMap.Height));
-                    lightingShader.Parameters["textureSize"].SetValue(new Vector2(backgroundTexture.Width, backgroundTexture.Height));
-                        //lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
-                        //lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
-                        //lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
-                        //lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
-                        //normalMapShader.Parameters["NormalTexture"].SetValue(bgNormalTexture);
-                        //Vector2 dir = screenMiddle - (catPosition + new Vector2(catTexture.Width / 2, catTexture.Height / 2)); // / gameScreenResolution;
-                        //dir.Normalize();
-                        //Vector3 lightDir = new Vector3(dir.X, -dir.Y, 0.05f);
-                        //normalMapShader.Parameters["LightDirection"].SetValue(lightDir);
-
-
-                        //backgroundNormalMapperSpriteBatch.Begin(effect: normalMapShader);
-                        //backgroundNormalMapperSpriteBatch.Draw(bgTexture, Vector2.Zero, Color.White);
-                        //backgroundNormalMapperSpriteBatch.End();
 
 
                     }
@@ -225,7 +210,7 @@ namespace MonoGame_SimpleSample
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
             // TODO: Add your drawing code here
 
             backgroudSpriteBatch.Begin(effect: lightingShader);

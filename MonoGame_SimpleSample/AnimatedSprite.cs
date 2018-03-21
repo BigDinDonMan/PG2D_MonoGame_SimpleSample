@@ -20,6 +20,12 @@ namespace MonoGame_SimpleSample
         int whichFrame;
         double currentFrameTime = 0;
         double expectedFrameTime = 100.0f;
+        public Vector2 Middle { get
+            {
+                return position + new Vector2(frameWidth/2, frameHeight/2);
+
+            }
+        }
 
 
         public AnimatedSprite(Texture2D texture, Vector2 startingPosition, int numberOfAnimationRows, int animationFramesInRow, GraphicsDevice graphicsDevice) : base(texture, startingPosition, graphicsDevice)
