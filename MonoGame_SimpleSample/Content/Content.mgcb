@@ -225,3 +225,9 @@
 /processorParam:TextureFormat=Color
 /build:perlin_noise.png
 
+#begin TorchesLightingShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:TorchesLightingShader.fx
+

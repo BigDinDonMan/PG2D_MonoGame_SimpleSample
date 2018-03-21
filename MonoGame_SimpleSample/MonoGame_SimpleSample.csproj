@@ -61,6 +61,7 @@
     <Content Include="Content\Level1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\TorchesLightingShader.fx" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
