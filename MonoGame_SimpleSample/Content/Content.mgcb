@@ -243,3 +243,15 @@
 /processorParam:TextureFormat=Color
 /build:light_map_inv.png
 
+#begin Portal_ripple.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Debug
+/build:Portal_ripple.fx
+
+#begin test.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:test.fx
+

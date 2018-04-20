@@ -19,7 +19,7 @@ namespace MonoGame_SimpleSample
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        SpriteBatch backgroudSpriteBatch;
+        SpriteBatch effectsSpriteBatch;
 
 
         Texture2D playerTexture;
@@ -42,6 +42,7 @@ namespace MonoGame_SimpleSample
         SpriteFont HUDFont;
         Effect defaultShader;
         Effect lightingShader;
+        Effect portalRippleShader;
 
 
         List<AnimatedSprite> Level;
@@ -78,7 +79,7 @@ namespace MonoGame_SimpleSample
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            backgroudSpriteBatch = new SpriteBatch(GraphicsDevice);
+            effectsSpriteBatch = new SpriteBatch(GraphicsDevice);
             playerTexture = Content.Load<Texture2D>("professor_walk_cycle_no_hat");
 
             var lines = System.IO.File.ReadAllLines(@"Content/Level1.txt");
@@ -113,6 +114,7 @@ namespace MonoGame_SimpleSample
             //Effects
             defaultShader = Content.Load<Effect>("DefaultShader");
             lightingShader = Content.Load<Effect>("TorchesLightingShader");
+            portalRippleShader = Content.Load<Effect>("Portal_ripple");
 
 
             // TODO: use this.Content to load your game content here
@@ -180,17 +182,26 @@ namespace MonoGame_SimpleSample
                     Vector2 screenMiddle = new Vector2(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
 
 
-                        lightingShader.Parameters["lightPos_1"].SetValue(Level[0].Middle);
-                        lightingShader.Parameters["lightPos_2"].SetValue(Level[1].Middle);
-                        lightingShader.Parameters["lightPos_3"].SetValue(Level[2].Middle);
-                        lightingShader.Parameters["lightPos_4"].SetValue(Level[3].Middle);
-                        lightingShader.Parameters["lightMapSize"].SetValue(new Vector2(lightMap.Width, lightMap.Height));
-                        lightingShader.Parameters["textureSize"].SetValue(new Vector2(backgroundTexture.Width, backgroundTexture.Height));
-                        lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
+                    //portalRippleShader.Parameters["tint"].SetValue(0.0f);
+
+                    portalRippleShader.Parameters["Timer"].SetValue((float)gameTime.TotalGameTime.TotalSeconds*10);
+                    portalRippleShader.Parameters["Refracton"].SetValue(50.0f);
+                    portalRippleShader.Parameters["VerticalTroughWidth"].SetValue(23.0f);
+                    portalRippleShader.Parameters["Wobble2"].SetValue(23.0f);
+
+                    lightingShader.Parameters["lightPos_1"].SetValue(Level[0].Middle);
+                    lightingShader.Parameters["lightPos_2"].SetValue(Level[1].Middle);
+                    lightingShader.Parameters["lightPos_3"].SetValue(Level[2].Middle);
+                    lightingShader.Parameters["lightPos_4"].SetValue(Level[3].Middle);
+                    lightingShader.Parameters["lightMapSize"].SetValue(new Vector2(lightMap.Width, lightMap.Height));
+                    lightingShader.Parameters["textureSize"].SetValue(new Vector2(backgroundTexture.Width, backgroundTexture.Height));
+                    lightingShader.Parameters["LightMapTexture"].SetValue(lightMap);
+
+
 
 
                     }
-				break;
+                    break;
 				
 				case GameState.paused:
 				{
@@ -213,27 +224,35 @@ namespace MonoGame_SimpleSample
             GraphicsDevice.Clear(Color.White);
             // TODO: Add your drawing code here
 
-            backgroudSpriteBatch.Begin(effect: lightingShader);
+            effectsSpriteBatch.Begin(effect: lightingShader);
             spriteBatch.Begin();
 
             //spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
-            backgroudSpriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
-
+            effectsSpriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+            effectsSpriteBatch.End();
             //draw the ground
             //groundSprite.Draw(GraphicsDevice, spriteBatch);
             groundSprite.Draw(GraphicsDevice, spriteBatch);
 
-            foreach (var sprite in Level)
+            //Draw only torches
+            for (int i =0; i< 4; i++)
             {
-                sprite.Draw(GraphicsDevice, spriteBatch);
+                Level[i].Draw(GraphicsDevice, spriteBatch);
             }
 
 
+            //Draw only door + portal
+            effectsSpriteBatch.Begin(effect: portalRippleShader);
+            Level[4].Draw(GraphicsDevice, effectsSpriteBatch);
+            effectsSpriteBatch.End();
+
+            effectsSpriteBatch.Begin();
+            Level[5].Draw(GraphicsDevice, effectsSpriteBatch);
+            effectsSpriteBatch.End();
 
             playerSprite.Draw(GraphicsDevice, spriteBatch);
             spriteBatch.DrawString(HUDFont, collisionText, new Vector2(700, 0), Color.Red);
 
-            backgroudSpriteBatch.End();
             spriteBatch.End();
 
 
